@@ -115,19 +115,20 @@ async function openReport(reportId) {
     if (!data) { alert('No data found in report.'); return; }
 
     setState({
-      reportId: report.id,
-      reportNumber: report.report_number,
-      reportStatus: report.report_status,
-      reportType: report.report_type,
-      scanTypeTitle: data.scanTypeTitle || report.report_type,
-      patientInfo: { ...getState().patientInfo, ...(data.patientInfo || {}) },
-      values: data.values || {},
-      impression: data.impression || '',
-      additionalNotes: data.additionalNotes || '',
-      createdAt: report.created_at,
-      updatedAt: report.updated_at,
-      finalizedAt: report.finalized_at,
-      isDirty: false,
+        reportId: report.id,
+        reportNumber: report.report_number,
+        reportStatus: report.report_status,
+        reportType: report.report_type,
+        scanTypeTitle: data.scanTypeTitle || report.report_type,
+        patientInfo: { ...getState().patientInfo, ...(data.patientInfo || {}) },
+        values: data.values || {},
+        impression: data.impression || '',
+        additionalNotes: data.additionalNotes || '',
+        createdAt: report.created_at,
+        updatedAt: report.updated_at,
+        finalizedAt: report.finalized_at,
+        isDirty: false,
+        pdf_url: report.pdf_url || null, // NEW
     });
 
     const template = getTemplate(report.report_type);

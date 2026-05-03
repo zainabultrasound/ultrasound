@@ -1,5 +1,5 @@
 // ============================================================
-// print.js – RELIABLE PDF GENERATION (off‑screen capture)
+// print.js – VECTOR PDF via pdfmake (no external HTML parser)
 // ============================================================
 
 import { getState, setState } from './core/state.js';
@@ -10,17 +10,16 @@ import { isAppOnline } from './services/sync.js';
 let isGenerating = false;
 
 /**
- * Standard browser print using print.css
+ * Standard browser print (uses print.css)
  */
 export function printReport() {
   window.print();
 }
 
 /**
- * Generates a PDF of the current report.
- * - Always downloads the PDF locally.
- * - Uploads to Supabase ONLY if no pdf_url exists on the current report.
- * - Uses off‑screen rendering for 100% reliable canvas capture.
+ * Generate a vector PDF of the current report.
+ * - Always downloads locally.
+ * - Uploads only if report has no existing pdf_url.
  */
 export async function generatePDF() {
   if (isGenerating) {
@@ -35,142 +34,47 @@ export async function generatePDF() {
     btn.textContent = '⏳ Generating...';
   }
 
-  const state = getState();
-  const source = document.getElementById('printable-report');
-  if (!source) {
-    alert('Report not ready. Please load a scan first.');
-    resetGenerationState(btn);
-    return;
-  }
-
-  // 1. Deep-clone the report content
-  const clone = source.cloneNode(true);
-
-  // Remove non‑printable elements from clone
-  clone.querySelectorAll(
-    '.print-hide, .add-btn, .remove-btn, .action-buttons, #history-panel, #action-buttons, #sidebar-toggle'
-  ).forEach(el => el.remove());
-
-  // Ensure print‑only elements are visible
-  clone.querySelectorAll('.print-visible-only').forEach(el => {
-    el.style.display = 'flex';
-  });
-
-  // Strip all IDs to avoid duplicates
-  clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-
-  // Force A4‑ish layout for capture (794px ≈ 210mm @96dpi)
-  clone.style.width = '794px';
-  clone.style.margin = '0 auto';
-  clone.style.background = '#ffffff';
-  clone.style.overflow = 'visible';
-
-  // 2. Off‑screen container (visible to canvas, hidden from user)
-  const offScreen = document.createElement('div');
-  offScreen.style.position = 'absolute';
-  offScreen.style.left = '-9999px';
-  offScreen.style.top = '0';
-  offScreen.style.visibility = 'visible';
-  offScreen.style.opacity = '1';
-  offScreen.style.backgroundColor = '#ffffff';
-  offScreen.style.width = '794px';   // match clone
-  offScreen.style.padding = '0';
-  offScreen.style.margin = '0';
-  offScreen.appendChild(clone);
-  document.body.appendChild(offScreen);
-
-  // 3. Force layout + paint
-  clone.getBoundingClientRect();
-  await new Promise(resolve => requestAnimationFrame(resolve));
-  await new Promise(resolve => setTimeout(resolve, 200)); // extra safety for fonts/images
-
-  let pdfBlob = null;
-
   try {
-    // 4. Capture via html2canvas
-    const canvas = await html2canvas(clone, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      windowWidth: 794,
+    const state = getState();
+    if (!state.reportType) {
+      alert('Please load a scan type first.');
+      return;
+    }
+
+    // 1. Build pdfmake document definition directly from state
+    const docDefinition = buildPDFDefinition(state);
+
+    // 2. Generate blob using pdfmake (global window.pdfMake)
+    const pdfMake = window.pdfMake;
+    if (!pdfMake) {
+      throw new Error('pdfmake library not loaded. Check CDN scripts.');
+    }
+
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+
+    const pdfBlob = await new Promise((resolve, reject) => {
+      pdfDocGenerator.getBlob((blob) => {
+        if (blob && blob.size > 0) resolve(blob);
+        else reject(new Error('pdfmake produced empty blob'));
+      });
     });
 
-    if (!canvas || canvas.width === 0 || canvas.height === 0) {
-      throw new Error('Captured canvas is empty.');
-    }
-
-    // 5. Build multi‑page PDF with jsPDF
-    const pdf = new jspdf.jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const pageWidth = 210;        // A4 width in mm
-    const pageHeight = 297;       // A4 height in mm
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    let position = 0;
-    let pageNum = 0;
-
-    while (position < imgHeight) {
-      if (pageNum > 0) {
-        pdf.addPage();
-      }
-
-      const sliceHeight = Math.min(pageHeight, imgHeight - position);
-      // Create a slice canvas for the current page
-      const sliceCanvas = document.createElement('canvas');
-      const scaleFactor = canvas.width / imgWidth; // px per mm
-      sliceCanvas.width = canvas.width;
-      sliceCanvas.height = Math.round(sliceHeight * scaleFactor);
-      const ctx = sliceCanvas.getContext('2d');
-      ctx.drawImage(
-        canvas,
-        0, Math.round(position * scaleFactor), canvas.width, sliceCanvas.height,
-        0, 0, canvas.width, sliceCanvas.height
-      );
-
-      pdf.addImage(
-        sliceCanvas.toDataURL('image/jpeg', 0.95),
-        'JPEG',
-        0,
-        0,
-        imgWidth,
-        sliceHeight,
-        undefined,
-        'FAST'
-      );
-
-      position += sliceHeight;
-      pageNum++;
-    }
-
-    pdfBlob = pdf.output('blob');
-
-    if (!pdfBlob || pdfBlob.size === 0) {
-      throw new Error('Generated PDF blob is empty.');
-    }
-
-    // 6. Always download locally
+    // 3. Build filename and download
     const filename = buildFilename(state);
     downloadBlob(pdfBlob, filename);
 
-    // 7. Upload only if online, report exists, and NO existing cloud PDF
+    // 4. Cloud upload only if online, report exists, and no existing cloud PDF
     if (isAppOnline() && state.reportId && !state.pdf_url) {
       try {
-        const filePath = `${state.patientInfo.patient_code || 'unknown'}/${filename}`;
-        await uploadPDF(filePath, pdfBlob);
-        const publicUrl = getPDFPublicUrl(filePath);
+        const uploadPath = `${state.patientInfo.patient_code || 'unknown'}/${filename}`;
+        await uploadPDF(uploadPath, pdfBlob);
+        const publicUrl = getPDFPublicUrl(uploadPath);
         await updateReport(state.reportId, { pdf_url: publicUrl });
-        setState({ pdf_url: publicUrl });  // remember for future clicks
+        setState({ pdf_url: publicUrl });
         alert('PDF saved locally and uploaded to cloud.');
       } catch (uploadErr) {
-        console.error('Upload failed, but local PDF was saved:', uploadErr);
-        alert('PDF downloaded, but cloud upload failed.');
+        console.error('Cloud upload failed:', uploadErr);
+        alert('PDF saved locally, but cloud upload failed.');
       }
     } else {
       alert('PDF downloaded.');
@@ -179,13 +83,167 @@ export async function generatePDF() {
     alert('PDF generation failed: ' + err.message);
     console.error(err);
   } finally {
-    // Clean up
-    if (offScreen.parentNode) {
-      document.body.removeChild(offScreen);
-    }
     resetGenerationState(btn);
   }
 }
+
+// ---------- Build pdfmake document definition ----------
+
+function buildPDFDefinition(state) {
+  const { patientInfo: p, currentTemplate: tpl, values, impression, additionalNotes, reportNumber, createdAt, scanTypeTitle, reportStatus } = state;
+
+  const esc = (str) => (str == null) ? '' : String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Styles (similar to print.css)
+  const styles = {
+    header: { fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 4] },
+    subheader: { fontSize: 10, alignment: 'center', margin: [0, 0, 0, 8], color: '#555' },
+    sectionTitle: { fontSize: 11, bold: true, margin: [0, 12, 0, 4], decoration: 'underline' },
+    tableHeader: { bold: true, fillColor: '#eeeeee' },
+    fieldLabel: { bold: true, fontSize: 9 },
+    fieldValue: { fontSize: 9 },
+    line: { margin: [0, 8, 0, 8], canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }] },
+    signature: { margin: [0, 30, 0, 0] },
+  };
+
+  const content = [];
+
+  // ---- Header ----
+  content.push({ text: CONFIG.clinicName, style: 'header' });
+  content.push({ text: `${CONFIG.clinicAddress} | Phone: ${CONFIG.clinicPhone}`, style: 'subheader' });
+  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2 }] });
+
+  // ---- Report Metadata ----
+  content.push({
+    table: {
+      widths: ['*', '*'],
+      body: [
+        [
+          { text: `Report #: ${esc(reportNumber || '—')}`, style: 'fieldLabel' },
+          { text: `Date: ${createdAt ? new Date(createdAt).toLocaleDateString() : new Date().toLocaleDateString()}`, style: 'fieldLabel' }
+        ],
+        [
+          { text: `Scan Type: ${esc(scanTypeTitle || '—')}`, style: 'fieldLabel' },
+          { text: `Status: ${reportStatus === 'final' ? 'Final' : 'Draft'}`, style: 'fieldLabel' }
+        ]
+      ]
+    },
+    layout: 'noBorders',
+    margin: [0, 8, 0, 8]
+  });
+
+  // ---- Patient Information ----
+  content.push({ text: 'Patient Information', style: 'sectionTitle' });
+  const patientRows = [
+    ['Patient ID', p.patient_code, 'Name', p.name],
+    ['Age', p.age, 'Gender', p.gender],
+    ['Phone', p.phone, 'Referred By', p.referred_by],
+    ['Referring Clinic', p.referring_clinic, '', '']
+  ];
+  if (p.lmp) patientRows.push(['LMP', p.lmp, 'Gestational Age', p.gestational_age || '']);
+  if (p.clinical_history) patientRows.push(['Clinical History', { text: p.clinical_history, colSpan: 3 }, '', '']);
+  content.push({
+    table: {
+      widths: ['auto', '*', 'auto', '*'],
+      body: patientRows.map(row => row.map(cell => (typeof cell === 'string' ? { text: esc(cell), style: 'fieldValue' } : { ...cell, style: 'fieldValue' })))
+    },
+    layout: 'lightHorizontalLines',
+    margin: [0, 0, 0, 8]
+  });
+
+  // ---- Template Sections ----
+  if (tpl && tpl.sections) {
+    tpl.sections.forEach(section => {
+      content.push({ text: section.title, style: 'sectionTitle' });
+
+      if (section.repeatable) {
+        const items = values[section.id] || [{}];
+        items.forEach((item, idx) => {
+          content.push({ text: `${section.groupLabel || 'Item'} ${idx + 1}`, italics: true, margin: [0, 4, 0, 2] });
+          const rows = [];
+          section.fields.forEach(field => {
+            if (isFieldHidden(field, item, values, p)) return;
+            rows.push([{ text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' }, { text: formatFieldValue(field, item[field.id]), style: 'fieldValue' }]);
+          });
+          if (rows.length > 0) {
+            content.push({
+              table: { widths: ['auto', '*'], body: rows },
+              layout: 'noBorders',
+              margin: [0, 0, 0, 6]
+            });
+          }
+        });
+      } else {
+        const rows = [];
+        section.fields.forEach(field => {
+          if (isFieldHidden(field, values[section.id] || {}, values, p)) return;
+          const val = (values[section.id] || {})[field.id] ?? '';
+          rows.push([{ text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' }, { text: formatFieldValue(field, val), style: 'fieldValue' }]);
+        });
+        if (rows.length > 0) {
+          content.push({
+            table: { widths: ['auto', '*'], body: rows },
+            layout: 'noBorders',
+            margin: [0, 0, 0, 8]
+          });
+        }
+      }
+    });
+  }
+
+  // ---- Impression & Notes ----
+  content.push({ text: 'Impression & Notes', style: 'sectionTitle' });
+  content.push({ text: [{ text: 'Impression: ', bold: true }, esc(impression || '—')], margin: [0, 4, 0, 4] });
+  if (additionalNotes) {
+    content.push({ text: [{ text: 'Additional Notes: ', bold: true }, esc(additionalNotes)], margin: [0, 0, 0, 8] });
+  }
+
+  // ---- Signature Area ----
+  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }], margin: [0, 20, 0, 0] });
+  content.push({
+    table: {
+      widths: ['*', 'auto'],
+      body: [
+        [{ text: `Reporting Doctor: ${CONFIG.doctorName}`, style: 'fieldLabel' }, { text: '________________________', alignment: 'right' }],
+        [{ text: `Qualification: ${CONFIG.doctorQualification}`, style: 'fieldLabel' }, { text: "Doctor's Signature / Stamp", fontSize: 8, alignment: 'right' }],
+        [{ text: `Registration: ${CONFIG.doctorRegistration}`, style: 'fieldLabel' }, '']
+      ]
+    },
+    layout: 'noBorders',
+    margin: [0, 4, 0, 0]
+  });
+
+  return {
+    content,
+    styles,
+    defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.2 },
+    pageSize: 'A4',
+    pageMargins: [40, 40, 40, 40],
+    info: {
+      title: buildFilename(state),
+      author: CONFIG.clinicName,
+    }
+  };
+}
+
+// Helper: format a field value for display
+function formatFieldValue(field, value) {
+  if (value == null || value === '') return '—';
+  if (field.type === 'checkbox') return value === true || value === 'true' ? '✓' : '✗';
+  if (field.type === 'measurement') return field.unit ? `${value} ${field.unit}` : String(value);
+  if (field.type === 'textarea') return value; // keep line breaks; pdfmake will render them
+  return String(value);
+}
+
+// Helper: conditional field visibility
+function isFieldHidden(field, itemValues, allValues, patientInfo) {
+  if (!field.showIf) return false;
+  const dependField = field.showIf.field;
+  let dependValue = itemValues?.[dependField] ?? allValues?.[dependField] ?? patientInfo[dependField] ?? '';
+  return String(dependValue) !== String(field.showIf.equals);
+}
+
+// ---------- Preserved helpers (unchanged) ----------
 
 function buildFilename(state) {
   const base = sanitizeFilename(

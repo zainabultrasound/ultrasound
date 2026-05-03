@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/forms.css">
   <link rel="stylesheet" href="css/print.css" media="print">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Replace the old jspdf/html2canvas CDNs with these two (keep them) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 </head>
 <body>
   <!-- Status Bar -->
@@ -35,7 +37,7 @@
       <!-- Report Header -->
       <header class="report-header" id="report-header">
         <div class="clinic-branding">
-          <img src="assets/logo-placeholder.svg" alt="Clinic Logo" class="clinic-logo" id="clinic-logo">
+          <img src="assets/logo.png" alt="Clinic Logo" class="clinic-logo" id="clinic-logo">
           <div class="clinic-info">
             <h2 id="clinic-name-display"></h2>
             <p id="clinic-address"></p>

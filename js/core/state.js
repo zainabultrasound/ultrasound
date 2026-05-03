@@ -91,6 +91,7 @@ export function resetState() {
     isSaving: false,
     isLoading: false,
     currentTemplate: null,
+    pdf_url: null, // NEW
   });
 }
 

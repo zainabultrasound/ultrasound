@@ -11,14 +11,14 @@ export const CONFIG = {
 
   // Clinic Info (fallback - loaded from DB settings)
   clinicName: 'Zainab Zacha Bacha Ultrasound and Medical Center',
-  clinicAddress: '123 Medical Complex, City',
+  clinicAddress: 'Gali No. 4 , 5, Makkuana, Faisalabad',
   clinicPhone: '+92-3064932006',
-  clinicLogo: 'assets/logo-placeholder.svg',
+  clinicLogo: 'assets/logo.png',
 
   // Doctor Info
   doctorName: 'Dr. Atta ur Rehman',
   doctorQualification: 'MBBS, MD',
-  doctorRegistration: '[Reg No]',
+  doctorRegistration: '_________________',
   doctorDesignation: 'Family Physician',
 
   // App Settings
