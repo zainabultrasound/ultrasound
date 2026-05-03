@@ -1,0 +1,25 @@
+{
+  "name": "ZUC Ultrasound Reports",
+  "short_name": "ZUC Reports",
+  "start_url": "/ultrasound/",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#1a5276",
+  "description": "Ultrasound reporting system for Zainab Zacha Bacha Medical Center",
+  "icons": [
+    {
+      "src": "/ultrasound/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/ultrasound/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "scope": "/ultrasound/",
+  "lang": "en-PK",
+  "orientation": "any"
+}
