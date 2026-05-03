@@ -1,0 +1,166 @@
+/* ============================
+   layout.css - ENHANCED
+   ============================ */
+
+.app-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 36px);
+}
+
+.sidebar {
+  background: var(--primary);
+  color: #fff;
+  padding: 0;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 36px;
+  height: calc(100vh - 36px);
+  transition: box-shadow var(--transition-smooth);
+}
+.sidebar:hover { box-shadow: var(--shadow-hover); }
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.sidebar-header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.3px; }
+
+.sidebar nav { padding: 10px 0; }
+
+/* Sidebar navigation items */
+.sidebar-scan-item {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+}
+.sidebar-scan-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  padding-left: 24px;
+}
+.sidebar-scan-item.active {
+  background: rgba(255,255,255,0.12);
+  border-left-color: #fff;
+  font-weight: 600;
+  color: #fff;
+}
+.sidebar-cat-title {
+  padding: 6px 20px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  overflow-y: auto;
+  max-width: 1200px;
+  width: 100%;
+  background: var(--bg);
+}
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 42px;
+  left: 8px;
+  z-index: 200;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition-smooth);
+}
+.sidebar-toggle:hover { transform: scale(1.1); }
+
+.status-bar {
+  height: 36px;
+  background: #2c3e50;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  font-size: 0.8rem;
+  position: sticky;
+  top: 0;
+  z-index: 300;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.status-bar span { transition: all var(--transition); }
+
+.report-header {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow var(--transition-smooth);
+}
+.report-header:hover { box-shadow: var(--shadow-hover); }
+
+.clinic-branding {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.clinic-logo { height: 50px; width: auto; }
+.clinic-info h2 { font-size: 1.1rem; color: var(--primary); font-weight: 700; }
+.clinic-info p { font-size: 0.85rem; color: var(--text-light); }
+
+.report-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .app-container { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: -270px;
+    top: 36px;
+    bottom: 0;
+    z-index: 100;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 260px;
+    box-shadow: none;
+  }
+  .sidebar.open {
+    left: 0;
+    box-shadow: var(--shadow);
+  }
+  .sidebar-toggle { display: flex; }
+  .main-content { padding: 12px; gap: 12px; }
+  .report-metadata { flex-direction: column; gap: 4px; }
+}

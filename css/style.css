@@ -1,0 +1,216 @@
+/* ============================
+   style.css - ENHANCED
+   ============================ */
+
+:root {
+  --primary: #1a5276;
+  --primary-light: #2980b9;
+  --primary-lighter: #ebf5fb;
+  --primary-gradient: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --text: #2c3e50;
+  --text-light: #5d6d7e;
+  --border: #dce0e6;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 20px rgba(0,0,0,0.12);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --transition: 0.2s ease;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global entrance animation for key sections */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply to main content sections */
+.report-header,
+.patient-section,
+.dynamic-form,
+.impression-section,
+.action-buttons,
+.history-panel.active {
+  animation: fadeSlideUp 0.5s ease-out both;
+}
+
+/* Staggered delays for a cascading effect */
+.report-header { animation-delay: 0s; }
+.patient-section { animation-delay: 0.05s; }
+.dynamic-form { animation-delay: 0.1s; }
+.impression-section { animation-delay: 0.15s; }
+.action-buttons { animation-delay: 0.2s; }
+
+a { color: var(--primary-light); text-decoration: none; }
+
+/* Button Enhancements */
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  will-change: transform;
+}
+button:active { transform: scale(0.97); }
+
+button.btn-primary {
+  background: var(--primary-gradient);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(26,82,118,0.3);
+}
+button.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(26,82,118,0.4);
+}
+button.btn-primary:active { transform: scale(0.98); }
+
+button.btn-secondary {
+  background: var(--border);
+  color: var(--text);
+}
+button.btn-secondary:hover {
+  background: #c8ccd4;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+button.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+button.btn-success:hover { background: #219a52; }
+
+button.btn-warning {
+  background: var(--warning);
+  color: #fff;
+}
+button.btn-warning:hover { background: #d68910; }
+
+button.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+button.btn-danger:hover { background: #c0392b; }
+
+button.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+button.btn-xs { padding: 3px 8px; font-size: 0.7rem; border-radius: var(--radius-sm); }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Input Enhancements */
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(41,128,185,0.12);
+}
+input.invalid, select.invalid, textarea.invalid {
+  border-color: var(--danger);
+  background: #fef5f5;
+}
+input[readonly] {
+  background: #f8f9fa;
+  color: var(--text-light);
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+  color: var(--text);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all var(--transition);
+}
+.badge-draft { background: #fef3cd; color: #856404; }
+.badge-final { background: #d4edda; color: #155724; }
+
+/* Print-visible elements default hidden */
+.print-visible-only { display: none; }
+@media print { .print-visible-only { display: block; } }
+
+/* Online/Offline indicator pulse */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+  100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+}
+#sync-status .online-pulse {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2ecc71;
+  animation: pulse 2s infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+/* Offline dot */
+.offline-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e74c3c;
+  margin-right: 6px;
+  vertical-align: middle;
+}

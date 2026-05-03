@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultrasound Reporting System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Status Bar -->
+  <div id="status-bar" class="status-bar">
+    <span id="sync-status">● Online</span>
+    <span id="draft-indicator" style="display:none;">📝 Unsaved changes</span>
+    <span id="pending-sync" style="display:none;">📤 Pending sync: 0</span>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h1>ZUC Reports</h1>
+      </div>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+
+    <!-- Mobile menu toggle -->
+    <button id="sidebar-toggle" class="sidebar-toggle print-hide">☰</button>
+
+    <!-- Main Content -->
+    <main class="main-content" id="printable-report">
+      <!-- Report Header -->
+      <header class="report-header" id="report-header">
+        <div class="clinic-branding">
+          <img src="assets/logo-placeholder.svg" alt="Clinic Logo" class="clinic-logo" id="clinic-logo">
+          <div class="clinic-info">
+            <h2 id="clinic-name-display"></h2>
+            <p id="clinic-address"></p>
+            <p id="clinic-phone"></p>
+          </div>
+        </div>
+        <div class="report-metadata">
+          <div><strong>Report #:</strong> <span id="display-report-number">—</span></div>
+          <div><strong>Date:</strong> <span id="display-report-date">—</span></div>
+          <div><strong>Scan Type:</strong> <span id="display-scan-type">—</span></div>
+          <div><strong>Status:</strong> <span id="display-report-status" class="badge">—</span></div>
+        </div>
+      </header>
+
+      <!-- Patient Information -->
+      <section id="patient-section" class="patient-section"></section>
+
+      <!-- Dynamic Form -->
+      <section id="dynamic-form" class="dynamic-form"></section>
+
+      <!-- Impression -->
+      <section id="impression-section" class="impression-section"></section>
+
+      <!-- Doctor / Signature Area (print-visible) -->
+      <div id="signature-area" class="signature-area print-visible-only">
+        <div>
+          <p><strong>Reporting Doctor:</strong> <span id="sig-doctor-name"></span></p>
+          <p><strong>Qualification:</strong> <span id="sig-qualification"></span></p>
+          <p><strong>Registration:</strong> <span id="sig-registration"></span></p>
+        </div>
+        <div class="signature-line">
+          <p>________________________</p>
+          <p>Doctor's Signature or Stamp</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div id="action-buttons" class="action-buttons print-hide"></div>
+
+      <!-- History Panel -->
+      <div id="history-panel" class="history-panel print-hide" style="display:none;"></div>
+    </main>
+  </div>
+
+  <!-- Scripts - loaded in dependency order -->
+  <script type="module" src="js/core/config.js"></script>
+  <script type="module" src="js/core/events.js"></script>
+  <script type="module" src="js/core/state.js"></script>
+  <script type="module" src="js/services/supabase.js"></script>
+  <script type="module" src="js/services/storage.js"></script>
+  <script type="module" src="js/services/sync.js"></script>
+  <script type="module" src="js/services/calculations.js"></script>
+  <script type="module" src="js/services/report-number.js"></script>
+  <script type="module" src="js/templates/registry.js"></script>
+  <script type="module" src="js/components/status-bar.js"></script>
+  <script type="module" src="js/components/patient-section.js"></script>
+  <script type="module" src="js/components/impression-section.js"></script>
+  <script type="module" src="js/components/action-buttons.js"></script>
+  <script type="module" src="js/components/history-panel.js"></script>
+  <script type="module" src="js/components/sidebar.js"></script>
+  <script type="module" src="js/renderer.js"></script>
+  <script type="module" src="js/validation.js"></script>
+  <script type="module" src="js/print.js"></script>
+  <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
