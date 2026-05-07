@@ -1,51 +1,74 @@
 export const kub = {
   id: "kub",
-  title: "KUB (Kidney-Ureter-Bladder)",
+  title: "KUB / Prostate (Point of Care)",
   category: "Abdomen & Pelvic",
   sections: [
     {
-      id: "kidneys",
-      title: "Kidneys",
+      id: "right_kidney",
+      title: "Right Kidney",
       fields: [
-        { id: "right_kidney", label: "Right Kidney", type: "dropdown", options: ["Normal", "Stone", "Hydronephrosis", "Cyst", "Atrophic"], required: true },
-        { id: "left_kidney", label: "Left Kidney", type: "dropdown", options: ["Normal", "Stone", "Hydronephrosis", "Cyst", "Atrophic"], required: true },
-        { id: "stone_size_right", label: "Stone Size (Right)", type: "measurement", unit: "mm", min: 0 },
-        { id: "stone_size_left", label: "Stone Size (Left)", type: "measurement", unit: "mm", min: 0 },
-        { id: "stone_location_right", label: "Stone Location (Right)", type: "text", placeholder: "e.g. upper pole" },
-        { id: "stone_location_left", label: "Stone Location (Left)", type: "text", placeholder: "e.g. mid calyx" }
+        { id: "rk_size_length", label: "Size (Length)", type: "measurement", unit: "cm", min: 0, placeholder: "Length" },
+        { id: "rk_size_width", label: "Size (Width)", type: "measurement", unit: "cm", min: 0, placeholder: "Width" },
+        { id: "rk_cortex", label: "Cortex", type: "measurement", unit: "cm", min: 0 },
+        { id: "rk_shape", label: "Shape", type: "dropdown", options: ["Normal", "Abnormal", "Not Visualized"] },
+        { id: "rk_echotexture", label: "Echotexture", type: "dropdown", options: ["Normal", "Increased Echogenicity", "Decreased Echogenicity", "Abnormal"] },
+        { id: "rk_capsule", label: "Capsule", type: "dropdown", options: ["Intact", "Irregular", "Breached"] },
+        { id: "rk_corticomedullary", label: "Corticomedullary Demarcation", type: "dropdown", options: ["Maintained", "Lost", "Reduced"] },
+        { id: "rk_calculus", label: "Calculus", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "rk_cyst", label: "Cyst", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "rk_hydronephrosis", label: "Hydronephrosis", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "rk_hydropelvic", label: "Hydropelvic", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "rk_hydroureter", label: "Hydroureter", type: "dropdown", options: ["Present", "Absent"] }
       ]
     },
     {
-      id: "ureters",
-      title: "Ureters",
+      id: "left_kidney",
+      title: "Left Kidney",
       fields: [
-        { id: "ureter_dilatation", label: "Ureter Dilatation", type: "dropdown", options: ["Present", "Absent"] },
-        { id: "obstruction", label: "Obstruction", type: "dropdown", options: ["Present", "Absent"] }
+        { id: "lk_size_length", label: "Size (Length)", type: "measurement", unit: "cm", min: 0, placeholder: "Length" },
+        { id: "lk_size_width", label: "Size (Width)", type: "measurement", unit: "cm", min: 0, placeholder: "Width" },
+        { id: "lk_cortex", label: "Cortex", type: "measurement", unit: "cm", min: 0 },
+        { id: "lk_shape", label: "Shape", type: "dropdown", options: ["Normal", "Abnormal", "Not Visualized"] },
+        { id: "lk_echotexture", label: "Echotexture", type: "dropdown", options: ["Normal", "Increased Echogenicity", "Decreased Echogenicity", "Abnormal"] },
+        { id: "lk_capsule", label: "Capsule", type: "dropdown", options: ["Intact", "Irregular", "Breached"] },
+        { id: "lk_corticomedullary", label: "Corticomedullary Demarcation", type: "dropdown", options: ["Maintained", "Lost", "Reduced"] },
+        { id: "lk_calculus", label: "Calculus", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "lk_cyst", label: "Cyst", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "lk_hydronephrosis", label: "Hydronephrosis", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "lk_hydropelvic", label: "Hydropelvic", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "lk_hydroureter", label: "Hydroureter", type: "dropdown", options: ["Present", "Absent"] }
       ]
     },
     {
-      id: "bladder",
+      id: "urinary_bladder",
       title: "Urinary Bladder",
       fields: [
-        { id: "bladder_wall", label: "Bladder Wall", type: "dropdown", options: ["Normal", "Thickened"] },
-        { id: "calculi", label: "Calculi", type: "dropdown", options: ["Present", "Absent"] },
-        { id: "pre_void_volume", label: "Pre-void Volume", type: "measurement", unit: "ml", min: 0 },
-        { id: "post_void_residual", label: "Post-void Residual", type: "measurement", unit: "ml", min: 0 }
+        {
+          id: "bladder_state",
+          label: "Bladder State",
+          type: "radio",
+          options: ["Filled", "Partially Filled", "Empty"],
+          required: true
+        },
+        { id: "wall_thickness", label: "Wall Thickness", type: "measurement", unit: "mm", min: 0 },
+        { id: "pre_void_volume", label: "Pre Void Volume", type: "measurement", unit: "ml", min: 0 },
+        { id: "pmrv", label: "PMRV", type: "measurement", unit: "ml", min: 0 }
       ]
     },
     {
       id: "prostate",
-      title: "Prostate (if male)",
+      title: "Prostate",
       fields: [
-        { id: "prostate_size", label: "Prostate Size", type: "dropdown", options: ["Normal", "Enlarged"] },
-        { id: "prostate_volume", label: "Volume", type: "measurement", unit: "cc", min: 0 }
+        { id: "prostate_volume", label: "Volume", type: "measurement", unit: "g", min: 0 }
       ]
     },
     {
-      id: "findings",
-      title: "Findings",
+      id: "additional_findings",
+      title: "Additional Findings",
       fields: [
-        { id: "findings", label: "Additional Findings", type: "textarea" }
+        { id: "inguinal_lymph_nodes", label: "Inguinal Lymph Nodes", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "femoral_lymph_nodes", label: "Femoral Lymph Nodes", type: "dropdown", options: ["Present", "Absent"] },
+        { id: "pelvic_free_fluid", label: "Pelvic Free Fluid", type: "dropdown", options: ["Present", "Absent"] }
       ]
     }
   ]
