@@ -1,29 +1,79 @@
 /* ============================
-   style.css - ENHANCED
+   style.css – ZUC Premium Medical UI (Redesigned)
    ============================ */
 
 :root {
+  /* === Core Brand Colors (unchanged) === */
   --primary: #1a5276;
+  --primary-dark: #0d3449;
+  --primary-med: #1d6a99;
   --primary-light: #2980b9;
   --primary-lighter: #ebf5fb;
   --primary-gradient: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
-  --bg: #f4f6f9;
+  --primary-glow: 0 4px 14px rgba(26, 82, 118, 0.28);
+
+  /* === Backgrounds & Surfaces (refined) === */
+  --bg: #f1f5f9;
+  --bg-alt: #e6edf4;
   --surface: #ffffff;
-  --text: #2c3e50;
+  --surface-elevated: #ffffff;
+  --surface-highlight: #f0f6fd;
+
+  /* === Text (unchanged) === */
+  --text: #1e2b3c;
+  --text-secondary: #2c3e50;
   --text-light: #5d6d7e;
+  --text-muted: #8898aa;
+
+  /* === Borders & Dividers (subtle refinement) === */
   --border: #dce0e6;
+  --border-light: #e9edf2;
+  --border-focus: var(--primary-light);
+  --border-radius: 10px;
+
+  /* === Status Colors (unchanged) === */
   --success: #27ae60;
+  --success-light: #e6f7ee;
   --warning: #f39c12;
+  --warning-light: #fef8e7;
   --danger: #e74c3c;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-  --shadow: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-hover: 0 8px 20px rgba(0,0,0,0.12);
+  --danger-light: #ffebea;
+
+  /* === Shadows (modern layered) === */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.09);
+  --shadow-card: 0 4px 14px rgba(0,0,0,0.06);
+  --shadow-button: 0 3px 8px rgba(26,82,118,0.15);
+
+  /* === Radii (slightly increased for modern feel) === */
   --radius: 8px;
   --radius-sm: 4px;
-  --radius-lg: 12px;
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* === Typography (unchanged) === */
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+
+  /* === Transitions (unchanged) === */
+  --transition-fast: 0.15s ease;
   --transition: 0.2s ease;
   --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === Misc (unchanged) === */
+  --focus-ring: 0 0 0 3px rgba(41,128,185,0.18);
+
+  /* === NEW: Modern Medical Accents === */
+  --glass-bg: rgba(255,255,255,0.75);
+  --glass-border: rgba(255,255,255,0.4);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  --status-bg: rgba(15, 30, 45, 0.92);
+  --status-blur: 12px;
+  --sidebar-gradient: linear-gradient(180deg, #0a2537 0%, #1a5276 100%);
+  --sidebar-active-bg: rgba(255,255,255,0.12);
+  --sidebar-hover-bg: rgba(255,255,255,0.06);
+  --scrollbar-thumb: #b0bec5;
+  --scrollbar-track: #eef2f7;
 }
 
 *, *::before, *::after {
@@ -32,81 +82,131 @@
   padding: 0;
 }
 
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  overflow-x: hidden;
 }
 
-/* Global entrance animation for key sections */
+/* Custom Scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #90a4ae;
+}
+
+/* Typography refinement */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+a {
+  color: var(--primary-light);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--primary-med);
+}
+
+/* ============================
+   Global Entrance Animation
+   ============================ */
 @keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Apply to main content sections */
 .report-header,
 .patient-section,
 .dynamic-form,
 .impression-section,
 .action-buttons,
 .history-panel.active {
-  animation: fadeSlideUp 0.5s ease-out both;
+  animation: fadeSlideUp 0.45s ease-out both;
 }
-
-/* Staggered delays for a cascading effect */
 .report-header { animation-delay: 0s; }
 .patient-section { animation-delay: 0.05s; }
 .dynamic-form { animation-delay: 0.1s; }
 .impression-section { animation-delay: 0.15s; }
 .action-buttons { animation-delay: 0.2s; }
 
-a { color: var(--primary-light); text-decoration: none; }
-
-/* Button Enhancements */
+/* ============================
+   Buttons – Medical Grade
+   ============================ */
 button {
   cursor: pointer;
   font-family: inherit;
   border: none;
   border-radius: var(--radius);
-  padding: 10px 18px;
+  padding: 10px 20px;
   font-size: 0.9rem;
   font-weight: 500;
   transition: all var(--transition-smooth);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   white-space: nowrap;
   box-shadow: var(--shadow-sm);
   will-change: transform;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
 }
-button:active { transform: scale(0.97); }
+
+button:active {
+  transform: scale(0.97);
+}
 
 button.btn-primary {
   background: var(--primary-gradient);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(26,82,118,0.3);
+  border: none;
+  box-shadow: var(--shadow-button);
 }
 button.btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(26,82,118,0.4);
+  box-shadow: var(--primary-glow);
+  background: linear-gradient(135deg, #1d6a99 0%, #3498db 100%);
 }
-button.btn-primary:active { transform: scale(0.98); }
+button.btn-primary:active {
+  transform: scale(0.98);
+}
 
 button.btn-secondary {
-  background: var(--border);
-  color: var(--text);
+  background: var(--border-light);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
 }
 button.btn-secondary:hover {
-  background: #c8ccd4;
+  background: #dde2e8;
   transform: translateY(-1px);
   box-shadow: var(--shadow);
 }
@@ -114,84 +214,159 @@ button.btn-secondary:hover {
 button.btn-success {
   background: var(--success);
   color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(39,174,96,0.2);
 }
-button.btn-success:hover { background: #219a52; }
+button.btn-success:hover {
+  background: #219a52;
+  box-shadow: 0 5px 14px rgba(39,174,96,0.3);
+}
 
 button.btn-warning {
   background: var(--warning);
   color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(243,156,18,0.2);
 }
-button.btn-warning:hover { background: #d68910; }
+button.btn-warning:hover {
+  background: #d68910;
+  box-shadow: 0 5px 14px rgba(243,156,18,0.3);
+}
 
 button.btn-danger {
   background: var(--danger);
   color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(231,76,60,0.2);
 }
-button.btn-danger:hover { background: #c0392b; }
+button.btn-danger:hover {
+  background: #c0392b;
+  box-shadow: 0 5px 14px rgba(231,76,60,0.3);
+}
 
-button.btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-button.btn-xs { padding: 3px 8px; font-size: 0.7rem; border-radius: var(--radius-sm); }
+button.btn-sm {
+  padding: 7px 14px;
+  font-size: 0.85rem;
+}
+button.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+}
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  background: #e9ecef;
+  color: #6c757d;
+  border-color: #dee2e6;
 }
 
-/* Input Enhancements */
+/* ============================
+   Focus & Accessibility
+   ============================ */
+:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ============================
+   Inputs & Form Controls
+   ============================ */
 input, select, textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-family: inherit;
   font-size: 0.95rem;
   background: #fff;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  color: var(--text);
+  line-height: 1.5;
 }
+
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(41,128,185,0.12);
+  box-shadow: var(--focus-ring);
 }
+
 input.invalid, select.invalid, textarea.invalid {
   border-color: var(--danger);
-  background: #fef5f5;
+  background: var(--danger-light);
 }
+
 input[readonly] {
   background: #f8f9fa;
   color: var(--text-light);
+  border-color: var(--border-light);
 }
 
 label {
   font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: block;
-  color: var(--text);
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
 }
 
+/* Radio / Checkbox accent color */
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: var(--primary);
+}
+
+/* ============================
+   Badges
+   ============================ */
 .badge {
   display: inline-block;
-  padding: 3px 10px;
-  border-radius: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   transition: all var(--transition);
+  line-height: 1.4;
 }
-.badge-draft { background: #fef3cd; color: #856404; }
-.badge-final { background: #d4edda; color: #155724; }
+.badge-draft {
+  background: var(--warning-light);
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+.badge-final {
+  background: var(--success-light);
+  color: #155724;
+  border: 1px solid #28a745;
+}
 
-/* Print-visible elements default hidden */
+/* ============================
+   Print Helpers
+   ============================ */
 .print-visible-only { display: none; }
-@media print { .print-visible-only { display: block; } }
+@media print {
+  .print-visible-only { display: block !important; }
+}
 
-/* Online/Offline indicator pulse */
+/* ============================
+   Status Indicators
+   ============================ */
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+  70% { box-shadow: 0 0 0 8px rgba(46,204,113,0); }
   100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
 }
 #sync-status .online-pulse {
@@ -201,16 +376,15 @@ label {
   border-radius: 50%;
   background: #2ecc71;
   animation: pulse 2s infinite;
-  margin-right: 6px;
+  margin-right: 8px;
   vertical-align: middle;
 }
-/* Offline dot */
 .offline-dot {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: #e74c3c;
-  margin-right: 6px;
+  margin-right: 8px;
   vertical-align: middle;
 }

@@ -5,6 +5,9 @@
 import { getState, updateFieldValue, addRepeatableItem, removeRepeatableItem } from './core/state.js';
 import { on, clearAll } from './core/events.js';
 import { gaFromCRL, eddFromGA, efwHadlock } from './services/calculations.js';
+import { toggleListening, stopListening, isSpeechSupported } from './services/voice.js';
+
+console.log('[Renderer] Module loaded, speech supported:', isSpeechSupported());
 
 /**
  * Main render function. Renders a template's sections and fields into #dynamic-form.
@@ -12,7 +15,10 @@ import { gaFromCRL, eddFromGA, efwHadlock } from './services/calculations.js';
 export function renderForm(template, existingValues = null) {
   const container = document.getElementById('dynamic-form');
   clearAll(container);
-  
+
+  // Stop any active voice recognition when re-rendering
+  stopListening();
+
   if (!template || !template.sections) {
     container.innerHTML = '<p>Select a scan type from the sidebar to begin.</p>';
     return;
@@ -72,13 +78,19 @@ function renderField(sectionId, field, value, repeatableIndex = null) {
   let inputHtml = '';
   switch (field.type) {
     case 'text':
-      inputHtml = `<input type="text" id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" value="${esc(value)}" placeholder="${field.placeholder || ''}" ${required}>`;
+      inputHtml = `<div class="input-voice-wrapper">
+        <input type="text" id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" value="${esc(value)}" placeholder="${field.placeholder || ''}" ${required}>
+        ${renderVoiceButton(fieldKey)}
+      </div>`;
       break;
     case 'number':
       inputHtml = `<input type="number" id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" value="${esc(value)}" placeholder="${field.placeholder || ''}" min="${field.min ?? ''}" max="${field.max ?? ''}" step="${field.step || 'any'}" ${required}>`;
       break;
     case 'textarea':
-      inputHtml = `<textarea id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" rows="${field.rows || 3}" placeholder="${field.placeholder || ''}" ${required}>${esc(value)}</textarea>`;
+      inputHtml = `<div class="input-voice-wrapper input-voice-wrapper-textarea">
+        <textarea id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" rows="${field.rows || 3}" placeholder="${field.placeholder || ''}" ${required}>${esc(value)}</textarea>
+        ${renderVoiceButton(fieldKey)}
+      </div>`;
       break;
     case 'date':
       inputHtml = `<input type="date" id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" value="${esc(value)}" ${required}>`;
@@ -118,6 +130,18 @@ function renderField(sectionId, field, value, repeatableIndex = null) {
   </div>`;
 }
 
+/**
+ * Render the mic button for text/textarea fields.
+ * Only shown if browser supports speech recognition.
+ */
+function renderVoiceButton(fieldKey) {
+  if (!isSpeechSupported()) {
+    console.warn('[Renderer] Voice not supported, omitting button for', fieldKey);
+    return '';
+  }
+  return `<button type="button" class="voice-btn no-print" data-voice-target="field-${fieldKey}" title="Click to dictate" aria-label="Voice typing">🎤</button>`;
+}
+
 function attachFormEvents(template) {
   const container = document.getElementById('dynamic-form');
 
@@ -130,6 +154,19 @@ function attachFormEvents(template) {
   on(container, 'change', 'select, input[type="radio"], input[type="checkbox"]', (e, el) => {
     handleFieldChange(el);
     applyConditionals(template);
+  });
+
+  // Voice button click handler
+  on(container, 'click', '.voice-btn', (e, el) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const targetId = el.dataset.voiceTarget;
+    const field = targetId ? document.getElementById(targetId) : null;
+    if (field) {
+      toggleListening(field);
+    } else {
+      console.warn('[Renderer] Voice target not found:', targetId);
+    }
   });
 
   on(container, 'click', '[data-action="add-repeatable"]', (e, el) => {

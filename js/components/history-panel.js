@@ -64,6 +64,30 @@ async function loadHistory(searchQuery = '') {
       </div>
     `;
 
+    // Delegate all history list clicks (buttons and rows)
+    panel.addEventListener('click', (e) => {
+      const openBtn = e.target.closest('.open-report-btn');
+      if (openBtn) {
+        e.stopPropagation();
+        openReport(openBtn.dataset.reportId);
+        return;
+      }
+
+      const pdfBtn = e.target.closest('.view-pdf-btn');
+      if (pdfBtn) {
+        e.stopPropagation();
+        const pdfUrl = pdfBtn.dataset.pdf;
+        if (pdfUrl) window.open(pdfUrl, '_blank');
+        return;
+      }
+
+      const historyItem = e.target.closest('.history-item');
+      if (historyItem && !e.target.closest('button')) {
+        openReport(historyItem.dataset.reportId);
+      }
+    });
+
+    // Search / refresh controls
     const searchInput = document.getElementById('history-search-input');
     const searchBtn = document.getElementById('history-search-btn');
     const refreshBtn = document.getElementById('history-refresh-btn');
@@ -72,14 +96,6 @@ async function loadHistory(searchQuery = '') {
     if (refreshBtn) refreshBtn.addEventListener('click', () => loadHistory(searchInput.value));
     if (searchInput) searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') loadHistory(searchInput.value);
-    });
-
-    panel.querySelectorAll('.history-item').forEach(item => {
-      item.addEventListener('click', async (e) => {
-        if (e.target.closest('button')) return;
-        const reportId = item.dataset.reportId;
-        await openReport(reportId);
-      });
     });
 
   } catch (err) {
@@ -128,7 +144,7 @@ async function openReport(reportId) {
         updatedAt: report.updated_at,
         finalizedAt: report.finalized_at,
         isDirty: false,
-        pdf_url: report.pdf_url || null, // NEW
+        pdf_url: report.pdf_url || null,
     });
 
     const template = getTemplate(report.report_type);
@@ -140,7 +156,7 @@ async function openReport(reportId) {
       renderImpressionSection();
       initImpressionSection();
       renderActionButtons();
-      initActionButtonHandlers();   // <-- FIX: re-attach listeners
+      initActionButtonHandlers();
       updateHeader();
     }
 

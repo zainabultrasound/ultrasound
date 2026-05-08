@@ -12,6 +12,7 @@ const AppState = {
   reportStatus: 'draft',   // 'draft' | 'final'
   reportType: '',          // template id e.g. 'dating_scan'
   scanTypeTitle: '',       // display title
+  pdf_url: null,           // NEW: PREVENT DUPLICATE generated PDF for download 
 
   // Patient info
   patientInfo: {
@@ -46,6 +47,9 @@ const AppState = {
 
   // Current template reference
   currentTemplate: null,
+
+  // Voice typing language preference (session-only, not persisted in reports)
+  voiceLanguage: 'en-US',
 };
 
 const stateProxy = new Proxy(AppState, {
@@ -92,6 +96,7 @@ export function resetState() {
     isLoading: false,
     currentTemplate: null,
     pdf_url: null, // NEW
+    // NOTE: voiceLanguage intentionally preserved across resets
   });
 }
 

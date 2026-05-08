@@ -1,5 +1,5 @@
 /* ============================
-   layout.css - ENHANCED
+   layout.css – ZUC Premium Medical Layout (Redesigned)
    ============================ */
 
 .app-container {
@@ -9,29 +9,38 @@
 }
 
 .sidebar {
-  background: var(--primary);
+  background: var(--sidebar-gradient);
   color: #fff;
   padding: 0;
   overflow-y: auto;
-  box-shadow: var(--shadow);
+  box-shadow: 2px 0 20px rgba(0,0,0,0.12);
   position: sticky;
   top: 36px;
   height: calc(100vh - 36px);
-  transition: box-shadow var(--transition-smooth);
+  transition: box-shadow var(--transition-smooth), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  border-right: 1px solid rgba(255,255,255,0.1);
 }
-.sidebar:hover { box-shadow: var(--shadow-hover); }
+.sidebar:hover { box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
 
 .sidebar-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.1);
+  backdrop-filter: blur(6px);
 }
-.sidebar-header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.3px; }
+.sidebar-header h1 { 
+  font-size: 1.3rem; 
+  font-weight: 700; 
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
 
 .sidebar nav { padding: 10px 0; }
 
 /* Sidebar navigation items */
 .sidebar-scan-item {
-  padding: 10px 20px;
+  padding: 12px 20px;
   cursor: pointer;
   transition: all var(--transition-smooth);
   border-left: 3px solid transparent;
@@ -39,24 +48,29 @@
   align-items: center;
   font-size: 0.9rem;
   color: rgba(255,255,255,0.8);
+  margin: 2px 0;
+  border-radius: 0 8px 8px 0;
+  margin-right: 8px;
 }
 .sidebar-scan-item:hover {
-  background: rgba(255,255,255,0.08);
+  background: var(--sidebar-hover-bg);
   color: #fff;
   padding-left: 24px;
+  border-left-color: rgba(255,255,255,0.3);
 }
 .sidebar-scan-item.active {
-  background: rgba(255,255,255,0.12);
-  border-left-color: #fff;
+  background: var(--sidebar-active-bg);
+  border-left-color: #ffffff;
   font-weight: 600;
   color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .sidebar-cat-title {
   padding: 6px 20px;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.45);
   margin-top: 12px;
   font-weight: 700;
 }
@@ -69,7 +83,7 @@
   overflow-y: auto;
   max-width: 1200px;
   width: 100%;
-  background: var(--bg);
+  background: transparent;
 }
 
 .sidebar-toggle {
@@ -81,21 +95,27 @@
   background: var(--primary-gradient);
   color: #fff;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
   padding: 0;
   justify-content: center;
   align-items: center;
-  box-shadow: var(--shadow);
-  transition: transform var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+  border: 2px solid rgba(255,255,255,0.2);
 }
-.sidebar-toggle:hover { transform: scale(1.1); }
+.sidebar-toggle:hover { 
+  transform: scale(1.08); 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
 
 .status-bar {
   height: 36px;
-  background: #2c3e50;
-  color: #fff;
+  background: var(--status-bg);
+  backdrop-filter: blur(var(--status-blur));
+  -webkit-backdrop-filter: blur(var(--status-blur));
+  color: #ffffff;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -104,18 +124,26 @@
   position: sticky;
   top: 0;
   z-index: 300;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.status-bar span { transition: all var(--transition); }
+.status-bar span { 
+  transition: all var(--transition);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
 
 .report-header {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
   transition: box-shadow var(--transition-smooth);
 }
-.report-header:hover { box-shadow: var(--shadow-hover); }
+.report-header:hover { 
+  box-shadow: var(--shadow-hover);
+}
 
 .clinic-branding {
   display: flex;
@@ -124,16 +152,24 @@
   margin-bottom: 12px;
 }
 .clinic-logo { height: 50px; width: auto; }
-.clinic-info h2 { font-size: 1.1rem; color: var(--primary); font-weight: 700; }
-.clinic-info p { font-size: 0.85rem; color: var(--text-light); }
+.clinic-info h2 { 
+  font-size: 1.1rem; 
+  color: var(--primary); 
+  font-weight: 700; 
+}
+.clinic-info p { 
+  font-size: 0.85rem; 
+  color: var(--text-light); 
+}
 
 .report-metadata {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   font-size: 0.9rem;
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  margin-top: 4px;
 }
 
 .action-buttons {
@@ -148,19 +184,20 @@
   .app-container { grid-template-columns: 1fr; }
   .sidebar {
     position: fixed;
-    left: -270px;
+    left: -280px;
     top: 36px;
     bottom: 0;
     z-index: 100;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 260px;
     box-shadow: none;
+    border-right: none;
   }
   .sidebar.open {
     left: 0;
-    box-shadow: var(--shadow);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.25);
   }
   .sidebar-toggle { display: flex; }
   .main-content { padding: 12px; gap: 12px; }
-  .report-metadata { flex-direction: column; gap: 4px; }
+  .report-metadata { flex-direction: column; gap: 8px; }
 }
