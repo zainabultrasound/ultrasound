@@ -9,14 +9,9 @@ import { toggleListening, stopListening, isSpeechSupported } from './services/vo
 
 console.log('[Renderer] Module loaded, speech supported:', isSpeechSupported());
 
-/**
- * Main render function. Renders a template's sections and fields into #dynamic-form.
- */
 export function renderForm(template, existingValues = null) {
   const container = document.getElementById('dynamic-form');
   clearAll(container);
-
-  // Stop any active voice recognition when re-rendering
   stopListening();
 
   if (!template || !template.sections) {
@@ -29,7 +24,6 @@ export function renderForm(template, existingValues = null) {
 
   template.sections.forEach(section => {
     html += `<div class="form-section" data-section="${section.id}">`;
-    
     if (section.repeatable) {
       const items = values[section.id] || [{}];
       html += `<h3 class="section-title">
@@ -50,7 +44,6 @@ export function renderForm(template, existingValues = null) {
       });
       html += `</div>`;
     }
-    
     html += `</div>`;
   });
 
@@ -96,10 +89,14 @@ function renderField(sectionId, field, value, repeatableIndex = null) {
       inputHtml = `<input type="date" id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" value="${esc(value)}" ${required}>`;
       break;
     case 'dropdown':
-      inputHtml = `<select id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" ${required}>
-        <option value="">-- Select --</option>
-        ${(field.options || []).map(opt => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-      </select>`;
+      // PRINT FIX: Wrap select with print mirror span
+      inputHtml = `<span class="select-print-wrapper">
+        <select id="field-${fieldKey}" data-section="${sectionId}" data-field="${field.id}" data-index="${repeatableIndex ?? ''}" ${required}>
+          <option value="">-- Select --</option>
+          ${(field.options || []).map(opt => `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        </select>
+        <span class="print-select-value">${value ? esc(value) : '--'}</span>
+      </span>`;
       break;
     case 'radio':
       inputHtml = `<div class="radio-group">${(field.options || []).map((opt, idx) => 
@@ -130,10 +127,6 @@ function renderField(sectionId, field, value, repeatableIndex = null) {
   </div>`;
 }
 
-/**
- * Render the mic button for text/textarea fields.
- * Only shown if browser supports speech recognition.
- */
 function renderVoiceButton(fieldKey) {
   if (!isSpeechSupported()) {
     console.warn('[Renderer] Voice not supported, omitting button for', fieldKey);
@@ -151,9 +144,21 @@ function attachFormEvents(template) {
     applyConditionals(template);
   });
 
+  // Consolidated change handler: updates state AND mirror span
   on(container, 'change', 'select, input[type="radio"], input[type="checkbox"]', (e, el) => {
     handleFieldChange(el);
     applyConditionals(template);
+
+    // If it's a select inside a print wrapper, update the mirror
+    if (el.tagName === 'SELECT') {
+      const wrapper = el.closest('.select-print-wrapper');
+      if (wrapper) {
+        const span = wrapper.querySelector('.print-select-value');
+        if (span) {
+          span.textContent = el.value !== '' ? el.options[el.selectedIndex].text : '--';
+        }
+      }
+    }
   });
 
   // Voice button click handler

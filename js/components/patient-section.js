@@ -2,13 +2,16 @@
 // PATIENT INFORMATION COMPONENT
 // ============================================================
 
-import { getState, updatePatientInfo, setState } from '../core/state.js';
+import { getState, updatePatientInfo } from '../core/state.js';
 import { on } from '../core/events.js';
 import { isSpeechSupported, toggleListening } from '../services/voice.js';
 
 export function renderPatientSection() {
   const container = document.getElementById('patient-section');
   const patient = getState().patientInfo;
+  
+  // Convert stored gender value to a readable label for the mirror span
+  const genderLabel = getGenderLabel(patient.gender);
   
   container.innerHTML = `
     <h3 class="section-title">Patient Information</h3>
@@ -33,12 +36,15 @@ export function renderPatientSection() {
       </div>
       <div class="field-item">
         <label for="pt-gender">Gender *</label>
-        <select id="pt-gender" data-field="gender" required>
-          <option value="">-- Select --</option>
-          <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Male</option>
-          <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Female</option>
-          <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Other</option>
-        </select>
+        <span class="select-print-wrapper">
+          <select id="pt-gender" data-field="gender" required>
+            <option value="">-- Select --</option>
+            <option value="male" ${patient.gender === 'male' ? 'selected' : ''}>Male</option>
+            <option value="female" ${patient.gender === 'female' ? 'selected' : ''}>Female</option>
+            <option value="other" ${patient.gender === 'other' ? 'selected' : ''}>Other</option>
+          </select>
+          <span class="print-select-value">${genderLabel}</span>
+        </span>
       </div>
       <div class="field-item">
         <label for="pt-phone">Phone</label>
@@ -90,14 +96,24 @@ export function renderPatientSection() {
 export function initPatientSection() {
   const container = document.getElementById('patient-section');
   
-  // existing input change handler
-  on(container, 'input', 'input, select, textarea', (e, el) => {
+  // Combined change handler: update state AND print mirror
+  on(container, 'change', 'select', (e, el) => {
     const field = el.dataset.field;
     if (field) {
       updatePatientInfo(field, el.value);
     }
+
+    // Update mirror span with the selected option's text
+    const wrapper = el.closest('.select-print-wrapper');
+    if (wrapper) {
+      const span = wrapper.querySelector('.print-select-value');
+      if (span) {
+        span.textContent = el.value !== '' ? el.options[el.selectedIndex].text : '--';
+      }
+    }
   });
-  on(container, 'change', 'select', (e, el) => {
+
+  on(container, 'input', 'input, textarea', (e, el) => {
     const field = el.dataset.field;
     if (field) {
       updatePatientInfo(field, el.value);
@@ -127,4 +143,11 @@ function renderVoiceButton(fieldId) {
 function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Utility: convert stored gender value to display label
+function getGenderLabel(gender) {
+  if (!gender) return '--';
+  const genders = { male: 'Male', female: 'Female', other: 'Other' };
+  return genders[gender] || gender;
 }

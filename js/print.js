@@ -1,5 +1,5 @@
 // ============================================================
-// print.js – VECTOR PDF via pdfmake (no external HTML parser)
+// print.js – VECTOR PDF via pdfmake (Compact & Robust)
 // ============================================================
 
 import { getState, setState } from './core/state.js';
@@ -50,14 +50,20 @@ export async function generatePDF() {
       throw new Error('pdfmake library not loaded. Check CDN scripts.');
     }
 
-    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
-
-    const pdfBlob = await new Promise((resolve, reject) => {
-      pdfDocGenerator.getBlob((blob) => {
-        if (blob && blob.size > 0) resolve(blob);
-        else reject(new Error('pdfmake produced empty blob'));
+    let pdfBlob;
+    try {
+      const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+      pdfBlob = await new Promise((resolve, reject) => {
+        pdfDocGenerator.getBlob((blob) => {
+          if (blob && blob.size > 0) resolve(blob);
+          else reject(new Error('pdfmake produced empty blob'));
+        });
       });
-    });
+    } catch (err) {
+      // Log the definition to help debugging
+      console.error('PDF generation failed. Document definition:', JSON.stringify(docDefinition, null, 2));
+      throw err;
+    }
 
     // 3. Build filename and download
     const filename = buildFilename(state);
@@ -94,16 +100,14 @@ function buildPDFDefinition(state) {
 
   const esc = (str) => (str == null) ? '' : String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-  // Styles (similar to print.css)
+  // ------------- Compact Professional Styles -------------
   const styles = {
-    header: { fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 4] },
-    subheader: { fontSize: 10, alignment: 'center', margin: [0, 0, 0, 8], color: '#555' },
-    sectionTitle: { fontSize: 11, bold: true, margin: [0, 12, 0, 4], decoration: 'underline' },
+    header: { fontSize: 14, bold: true, alignment: 'center', margin: [0, 0, 0, 2] },
+    subheader: { fontSize: 10, alignment: 'center', margin: [0, 0, 0, 4], color: '#555' },
+    sectionTitle: { fontSize: 11, bold: true, margin: [0, 8, 0, 3], decoration: 'underline' },
     tableHeader: { bold: true, fillColor: '#eeeeee' },
     fieldLabel: { bold: true, fontSize: 9 },
     fieldValue: { fontSize: 9 },
-    line: { margin: [0, 8, 0, 8], canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }] },
-    signature: { margin: [0, 30, 0, 0] },
   };
 
   const content = [];
@@ -111,7 +115,7 @@ function buildPDFDefinition(state) {
   // ---- Header ----
   content.push({ text: CONFIG.clinicName, style: 'header' });
   content.push({ text: `${CONFIG.clinicAddress} | Phone: ${CONFIG.clinicPhone}`, style: 'subheader' });
-  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2 }] });
+  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2 }], margin: [0, 4, 0, 4] });
 
   // ---- Report Metadata ----
   content.push({
@@ -129,11 +133,12 @@ function buildPDFDefinition(state) {
       ]
     },
     layout: 'noBorders',
-    margin: [0, 8, 0, 8]
+    margin: [0, 4, 0, 4]
   });
 
   // ---- Patient Information ----
   content.push({ text: 'Patient Information', style: 'sectionTitle' });
+
   const patientRows = [
     ['Patient ID', p.patient_code, 'Name', p.name],
     ['Age', p.age, 'Gender', p.gender],
@@ -142,13 +147,19 @@ function buildPDFDefinition(state) {
   ];
   if (p.lmp) patientRows.push(['LMP', p.lmp, 'Gestational Age', p.gestational_age || '']);
   if (p.clinical_history) patientRows.push(['Clinical History', { text: p.clinical_history, colSpan: 3 }, '', '']);
+
+  // Defensive: ensure body is always a 2D array
+  const safeBody = patientRows
+    .filter(row => Array.isArray(row) && row.length > 0)
+    .map(row => row.map(cell => (typeof cell === 'string' ? { text: esc(cell), style: 'fieldValue' } : { ...cell, style: 'fieldValue' })));
+
   content.push({
     table: {
       widths: ['auto', '*', 'auto', '*'],
-      body: patientRows.map(row => row.map(cell => (typeof cell === 'string' ? { text: esc(cell), style: 'fieldValue' } : { ...cell, style: 'fieldValue' })))
+      body: safeBody
     },
     layout: 'lightHorizontalLines',
-    margin: [0, 0, 0, 8]
+    margin: [0, 0, 0, 4]
   });
 
   // ---- Template Sections ----
@@ -163,13 +174,16 @@ function buildPDFDefinition(state) {
           const rows = [];
           section.fields.forEach(field => {
             if (isFieldHidden(field, item, values, p)) return;
-            rows.push([{ text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' }, { text: formatFieldValue(field, item[field.id]), style: 'fieldValue' }]);
+            rows.push([
+              { text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' },
+              { text: formatFieldValue(field, item[field.id]), style: 'fieldValue' }
+            ]);
           });
           if (rows.length > 0) {
             content.push({
               table: { widths: ['auto', '*'], body: rows },
               layout: 'noBorders',
-              margin: [0, 0, 0, 6]
+              margin: [0, 0, 0, 4]
             });
           }
         });
@@ -178,13 +192,16 @@ function buildPDFDefinition(state) {
         section.fields.forEach(field => {
           if (isFieldHidden(field, values[section.id] || {}, values, p)) return;
           const val = (values[section.id] || {})[field.id] ?? '';
-          rows.push([{ text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' }, { text: formatFieldValue(field, val), style: 'fieldValue' }]);
+          rows.push([
+            { text: `${field.label}${field.required ? ' *' : ''}`, style: 'fieldLabel' },
+            { text: formatFieldValue(field, val), style: 'fieldValue' }
+          ]);
         });
         if (rows.length > 0) {
           content.push({
             table: { widths: ['auto', '*'], body: rows },
             layout: 'noBorders',
-            margin: [0, 0, 0, 8]
+            margin: [0, 0, 0, 4]
           });
         }
       }
@@ -193,13 +210,13 @@ function buildPDFDefinition(state) {
 
   // ---- Impression & Notes ----
   content.push({ text: 'Impression & Notes', style: 'sectionTitle' });
-  content.push({ text: [{ text: 'Impression: ', bold: true }, esc(impression || '—')], margin: [0, 4, 0, 4] });
+  content.push({ text: [{ text: 'Impression: ', bold: true }, esc(impression || '—')], margin: [0, 2, 0, 2] });
   if (additionalNotes) {
-    content.push({ text: [{ text: 'Additional Notes: ', bold: true }, esc(additionalNotes)], margin: [0, 0, 0, 8] });
+    content.push({ text: [{ text: 'Additional Notes: ', bold: true }, esc(additionalNotes)], margin: [0, 0, 0, 4] });
   }
 
   // ---- Signature Area ----
-  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }], margin: [0, 20, 0, 0] });
+  content.push({ canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }], margin: [0, 12, 0, 0] });
   content.push({
     table: {
       widths: ['*', 'auto'],
@@ -218,7 +235,7 @@ function buildPDFDefinition(state) {
     styles,
     defaultStyle: { font: 'Roboto', fontSize: 10, lineHeight: 1.2 },
     pageSize: 'A4',
-    pageMargins: [40, 40, 40, 40],
+    pageMargins: [28, 28, 28, 28],
     info: {
       title: buildFilename(state),
       author: CONFIG.clinicName,
@@ -231,7 +248,7 @@ function formatFieldValue(field, value) {
   if (value == null || value === '') return '—';
   if (field.type === 'checkbox') return value === true || value === 'true' ? '✓' : '✗';
   if (field.type === 'measurement') return field.unit ? `${value} ${field.unit}` : String(value);
-  if (field.type === 'textarea') return value; // keep line breaks; pdfmake will render them
+  if (field.type === 'textarea') return value; // keep line breaks
   return String(value);
 }
 
@@ -243,7 +260,7 @@ function isFieldHidden(field, itemValues, allValues, patientInfo) {
   return String(dependValue) !== String(field.showIf.equals);
 }
 
-// ---------- Preserved helpers (unchanged) ----------
+// ---------- Filename & download helpers ----------
 
 function buildFilename(state) {
   const base = sanitizeFilename(

@@ -1,7 +1,7 @@
 // service-worker.js – PWA for ZUC Ultrasound Reports
 // Version: change this string whenever you deploy a new build
 const VERSION = 'v1';
-const BASE = '/ultrasound';
+const BASE = '/';
 const CACHE_NAME = `zuc-reports-${VERSION}`;
 
 // ----- Pre‑cache critical app shell files -----

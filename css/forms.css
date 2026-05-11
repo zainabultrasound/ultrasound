@@ -325,3 +325,12 @@
 .input-voice-wrapper-textarea .voice-btn {
   margin-top: 2px;
 }
+
+
+
+/* ============================================================
+   PRINT MIRROR SPANS (hidden on screen, visible in print)
+   ============================================================ */
+.select-print-wrapper .print-select-value {
+  display: none;
+}

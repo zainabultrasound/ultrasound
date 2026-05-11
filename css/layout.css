@@ -7,197 +7,1033 @@
   grid-template-columns: 260px 1fr;
   min-height: calc(100vh - 36px);
 }
+/* =========================================================
+   LUXURY MEDICAL SIDEBAR UI
+   Premium Glassmorphism + Medical Glow Effects
+   Smooth / Lightweight / Production Friendly
+========================================================= */
 
+/* ===== Sidebar ===== */
 .sidebar {
-  background: var(--sidebar-gradient);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 61, 92, 0.96) 0%,
+      rgba(12, 40, 62, 0.97) 100%
+    );
+    
   color: #fff;
   padding: 0;
   overflow-y: auto;
-  box-shadow: 2px 0 20px rgba(0,0,0,0.12);
+  overflow-x: hidden;
+
   position: sticky;
   top: 36px;
   height: calc(100vh - 36px);
-  transition: box-shadow var(--transition-smooth), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
-  border-right: 1px solid rgba(255,255,255,0.1);
-}
-.sidebar:hover { box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
 
+  border-right: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 10px 40px rgba(0,0,0,0.22),
+    inset -1px 0 0 rgba(255,255,255,0.05);
+
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease,
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  animation: sidebarFade 0.7s ease;
+}
+
+/* Soft medical glow strip */
+.sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 2px;
+  height: 100%;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(90, 220, 255, 0),
+    rgba(90, 220, 255, 0.9),
+    rgba(90, 220, 255, 0)
+  );
+
+  box-shadow: 0 0 18px rgba(90, 220, 255, 0.55);
+  opacity: 0.75;
+}
+
+/* Floating glow */
+.sidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(90, 220, 255, 0.08),
+      transparent 35%
+    );
+
+  opacity: 0.9;
+}
+
+.sidebar:hover {
+  box-shadow:
+    0 12px 50px rgba(0,0,0,0.28),
+    0 0 24px rgba(90, 220, 255, 0.10),
+    inset -1px 0 0 rgba(255,255,255,0.07);
+}
+
+/* Custom Scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+  border-radius: 20px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* ===== Sidebar Header ===== */
 .sidebar-header {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  background: rgba(0,0,0,0.1);
-  backdrop-filter: blur(6px);
-}
-.sidebar-header h1 { 
-  font-size: 1.3rem; 
-  font-weight: 700; 
-  letter-spacing: -0.3px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  position: relative;
+
+  padding: 26px 22px 20px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+
+  background: rgba(255,255,255,0.04);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  overflow: hidden;
 }
 
-.sidebar nav { padding: 10px 0; }
+/* Animated glow overlay */
+.sidebar-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
 
-/* Sidebar navigation items */
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      rgba(255,255,255,0.05),
+      transparent
+    );
+
+  transform: translateX(-100%);
+  animation: shimmer 5s linear infinite;
+}
+
+.sidebar-header h1 {
+  position: relative;
+
+  font-size: 1.32rem;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 10px rgba(90, 220, 255, 0.22),
+    0 2px 4px rgba(0,0,0,0.25);
+
+  transition: all 0.35s ease;
+}
+
+.sidebar-header:hover h1 {
+  letter-spacing: 0.2px;
+
+  text-shadow:
+    0 0 14px rgba(90, 220, 255, 0.35),
+    0 2px 8px rgba(0,0,0,0.3);
+}
+
+.sidebar nav {
+  padding: 12px 0;
+}
+
+/* =========================================================
+   NAVIGATION ITEMS
+========================================================= */
+
 .sidebar-scan-item {
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: all var(--transition-smooth);
+  position: relative;
+
+  padding: 13px 20px;
+  margin: 4px 10px 4px 0;
+
   border-left: 3px solid transparent;
+  border-radius: 0 14px 14px 0;
+
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.8);
-  margin: 2px 0;
-  border-radius: 0 8px 8px 0;
-  margin-right: 8px;
+  gap: 10px;
+
+  font-size: 0.92rem;
+  font-weight: 500;
+
+  color: rgba(255,255,255,0.78);
+
+  cursor: pointer;
+  overflow: hidden;
+
+  background: transparent;
+
+  transition:
+    transform 0.28s ease,
+    background 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease,
+    padding-left 0.28s ease;
 }
+
+/* Hover glass layer */
+.sidebar-scan-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.02)
+    );
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Animated medical glow */
+.sidebar-scan-item::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -20px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #63e6ff;
+
+  transform: translateY(-50%);
+  opacity: 0;
+
+  box-shadow:
+    0 0 8px #63e6ff,
+    0 0 18px rgba(99,230,255,0.7);
+
+  transition: all 0.3s ease;
+}
+
 .sidebar-scan-item:hover {
-  background: var(--sidebar-hover-bg);
   color: #fff;
-  padding-left: 24px;
-  border-left-color: rgba(255,255,255,0.3);
+
+  padding-left: 25px;
+
+  transform: translateX(4px);
+
+  border-left-color: rgba(99,230,255,0.85);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.03)
+    );
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.18),
+    0 0 16px rgba(99,230,255,0.08);
 }
+
+.sidebar-scan-item:hover::before {
+  opacity: 1;
+}
+
+.sidebar-scan-item:hover::after {
+  left: 8px;
+  opacity: 1;
+}
+
+/* Active State */
 .sidebar-scan-item.active {
-  background: var(--sidebar-active-bg);
-  border-left-color: #ffffff;
+  color: #ffffff;
   font-weight: 600;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  border-left-color: #63e6ff;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(99,230,255,0.18),
+      rgba(255,255,255,0.04)
+    );
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.18),
+    0 0 18px rgba(99,230,255,0.14);
+
+  transform: translateX(3px);
 }
+
+.sidebar-scan-item.active::after {
+  left: 8px;
+  opacity: 1;
+}
+
+/* Click animation */
+.sidebar-scan-item:active {
+  transform: scale(0.985);
+}
+
+/* =========================================================
+   CATEGORY TITLES
+========================================================= */
+
 .sidebar-cat-title {
-  padding: 6px 20px;
+  position: relative;
+
+  padding: 10px 20px 6px;
+
+  margin-top: 14px;
+
   font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.45);
-  margin-top: 12px;
   font-weight: 700;
+
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  color: rgba(255,255,255,0.42);
 }
+
+/* Elegant divider */
+.sidebar-cat-title::after {
+  content: "";
+  display: block;
+
+  width: 36px;
+  height: 2px;
+
+  margin-top: 6px;
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(99,230,255,0.8),
+      transparent
+    );
+
+  box-shadow: 0 0 10px rgba(99,230,255,0.35);
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
 
 .main-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
   padding: 24px;
+
   overflow-y: auto;
-  max-width: 1200px;
+
   width: 100%;
+  max-width: 1200px;
+
   background: transparent;
+
+  animation: contentFade 0.6s ease;
 }
+
+/* =========================================================
+   SIDEBAR TOGGLE BUTTON
+========================================================= */
 
 .sidebar-toggle {
   display: none;
+
   position: fixed;
   top: 42px;
   left: 8px;
   z-index: 200;
-  background: var(--primary-gradient);
-  color: #fff;
+
+  width: 46px;
+  height: 46px;
+
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  font-size: 1.4rem;
-  padding: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(26,82,118,0.96),
+      rgba(41,128,185,0.96)
+    );
+
+  color: #fff;
+
+  font-size: 1.35rem;
+
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
-  border: 2px solid rgba(255,255,255,0.2);
-}
-.sidebar-toggle:hover { 
-  transform: scale(1.08); 
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+
+  backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,0.22),
+    0 0 18px rgba(99,230,255,0.12);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
 }
 
+.sidebar-toggle:hover {
+  transform: scale(1.08) rotate(4deg);
+
+  box-shadow:
+    0 10px 24px rgba(0,0,0,0.26),
+    0 0 24px rgba(99,230,255,0.26);
+}
+
+.sidebar-toggle:active {
+  transform: scale(0.96);
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes sidebarFade {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes contentFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   PERFORMANCE OPTIMIZATION
+========================================================= */
+
+.sidebar,
+.sidebar-scan-item,
+.sidebar-toggle {
+  will-change: transform;
+}
+
+
+/* =========================================================
+   LUXURY MEDICAL STATUS + REPORT HEADER UI
+   Premium Glassmorphism • Smooth Animations • Hover FX
+========================================================= */
+
+/* =========================================================
+   STATUS BAR
+========================================================= */
+
 .status-bar {
-  height: 36px;
-  background: var(--status-bg);
-  backdrop-filter: blur(var(--status-blur));
-  -webkit-backdrop-filter: blur(var(--status-blur));
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 20px;
-  font-size: 0.8rem;
   position: sticky;
   top: 0;
   z-index: 300;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.status-bar span { 
-  transition: all var(--transition);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
 
-.report-header {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-light);
-  transition: box-shadow var(--transition-smooth);
-}
-.report-header:hover { 
-  box-shadow: var(--shadow-hover);
-}
+  height: 38px;
 
-.clinic-branding {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 20px;
+
+  padding: 0 18px;
+
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(10, 35, 55, 0.92),
+      rgba(18, 58, 85, 0.90)
+    );
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  overflow: hidden;
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,0.18),
+    inset 0 -1px 0 rgba(255,255,255,0.04);
+
+  animation: statusFade 0.6s ease;
 }
-.clinic-logo { height: 50px; width: auto; }
-.clinic-info h2 { 
-  font-size: 1.1rem; 
-  color: var(--primary); 
-  font-weight: 700; 
+
+/* Elegant animated glow */
+.status-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(99,230,255,0.06) 30%,
+      transparent 60%
+    );
+
+  transform: translateX(-120%);
+  animation: statusShimmer 6s linear infinite;
 }
-.clinic-info p { 
-  font-size: 0.85rem; 
-  color: var(--text-light); 
+
+/* Medical neon line */
+.status-bar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(99,230,255,0.9),
+      transparent
+    );
+
+  box-shadow: 0 0 10px rgba(99,230,255,0.4);
 }
+
+/* Status texts */
+.status-bar span {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  letter-spacing: 0.02em;
+
+  color: rgba(255,255,255,0.82);
+
+  transition:
+    transform 0.28s ease,
+    color 0.28s ease,
+    text-shadow 0.28s ease;
+}
+
+/* Hover pulse */
+.status-bar span:hover {
+  color: #ffffff;
+
+  transform: translateY(-1px);
+
+  text-shadow:
+    0 0 8px rgba(99,230,255,0.5),
+    0 0 16px rgba(99,230,255,0.18);
+}
+
+/* Small live indicator */
+.status-bar span::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #63e6ff;
+
+  box-shadow:
+    0 0 6px #63e6ff,
+    0 0 12px rgba(99,230,255,0.6);
+
+  animation: pulseDot 2s infinite;
+}
+
+/* =========================================================
+   REPORT HEADER
+========================================================= */
+
+.report-header {
+  position: relative;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.92),
+      rgba(245,250,255,0.88)
+    );
+
+  border-radius: 24px;
+
+  padding: 22px 26px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255,255,255,0.5);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 10px 35px rgba(0,0,0,0.08),
+    0 0 0 1px rgba(255,255,255,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.45);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+
+  animation: reportCardFade 0.6s ease;
+}
+
+/* Medical ambient glow */
+.report-header::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -60px;
+
+  width: 180px;
+  height: 180px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99,230,255,0.16),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+/* Light reflection */
+.report-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      130deg,
+      rgba(255,255,255,0.22),
+      transparent 40%
+    );
+
+  pointer-events: none;
+}
+
+.report-header:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(99,230,255,0.22);
+
+  box-shadow:
+    0 16px 45px rgba(0,0,0,0.12),
+    0 0 25px rgba(99,230,255,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+/* =========================================================
+   CLINIC BRANDING
+========================================================= */
+
+.clinic-branding {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-bottom: 14px;
+}
+
+/* Logo styling */
+.clinic-logo {
+  height: 54px;
+  width: auto;
+
+  border-radius: 14px;
+
+  padding: 6px;
+
+  background: rgba(255,255,255,0.55);
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.08),
+    0 0 18px rgba(99,230,255,0.10);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.clinic-logo:hover {
+  transform: scale(1.06) rotate(-2deg);
+
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.12),
+    0 0 22px rgba(99,230,255,0.18);
+}
+
+/* Clinic title */
+.clinic-info h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+
+  color: var(--primary);
+
+  letter-spacing: -0.02em;
+
+  text-shadow:
+    0 1px 1px rgba(255,255,255,0.7);
+
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+.clinic-info h2:hover {
+  color: #1d6a99;
+
+  text-shadow:
+    0 0 10px rgba(99,230,255,0.22);
+}
+
+/* Subtitle */
+.clinic-info p {
+  margin-top: 4px;
+
+  font-size: 0.86rem;
+  line-height: 1.5;
+
+  color: var(--text-light);
+
+  transition: color 0.3s ease;
+}
+
+.clinic-info p:hover {
+  color: #4f6475;
+}
+
+/* =========================================================
+   REPORT METADATA
+========================================================= */
 
 .report-metadata {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 14px;
+
+  margin-top: 8px;
+  padding-top: 14px;
+
   font-size: 0.9rem;
-  border-top: 1px solid var(--border-light);
-  padding-top: 12px;
-  margin-top: 4px;
+
+  border-top: 1px solid rgba(0,0,0,0.06);
 }
+
+/* Metadata items */
+.report-metadata > * {
+  position: relative;
+
+  padding: 10px 14px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.72),
+      rgba(245,248,252,0.92)
+    );
+
+  border: 1px solid rgba(255,255,255,0.55);
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.05);
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
+}
+
+.report-metadata > *:hover {
+  transform: translateY(-2px);
+
+  border-color: rgba(99,230,255,0.28);
+
+  box-shadow:
+    0 10px 18px rgba(0,0,0,0.08),
+    0 0 14px rgba(99,230,255,0.10);
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
 
 .action-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px 0;
+  gap: 12px;
+
+  padding: 12px 0;
 }
 
-/* Mobile responsiveness */
+/* Generic action button enhancement */
+.action-buttons button,
+.action-buttons .btn {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    filter 0.28s ease;
+}
+
+/* Animated hover shine */
+.action-buttons button::before,
+.action-buttons .btn::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: -120%;
+
+  width: 70%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.28),
+      transparent
+    );
+
+  transform: skewX(-25deg);
+
+  transition: left 0.6s ease;
+}
+
+.action-buttons button:hover::before,
+.action-buttons .btn:hover::before {
+  left: 140%;
+}
+
+.action-buttons button:hover,
+.action-buttons .btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.12),
+    0 0 16px rgba(99,230,255,0.12);
+
+  filter: brightness(1.03);
+}
+
+.action-buttons button:active,
+.action-buttons .btn:active {
+  transform: scale(0.98);
+}
+
+/* =========================================================
+   MOBILE RESPONSIVENESS
+========================================================= */
+
 @media (max-width: 768px) {
-  .app-container { grid-template-columns: 1fr; }
+
+  .app-container {
+    grid-template-columns: 1fr;
+  }
+
   .sidebar {
     position: fixed;
+
     left: -280px;
-    top: 36px;
+    top: 38px;
     bottom: 0;
+
+    width: 265px;
+
     z-index: 100;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 260px;
-    box-shadow: none;
-    border-right: none;
+
+    transition:
+      left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.35s ease;
   }
+
   .sidebar.open {
     left: 0;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+
+    box-shadow:
+      0 18px 40px rgba(0,0,0,0.28),
+      0 0 24px rgba(99,230,255,0.10);
   }
-  .sidebar-toggle { display: flex; }
-  .main-content { padding: 12px; gap: 12px; }
-  .report-metadata { flex-direction: column; gap: 8px; }
+
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .main-content {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .report-header {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .clinic-branding {
+    gap: 14px;
+  }
+
+  .clinic-logo {
+    height: 48px;
+  }
+
+  .report-metadata {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .status-bar {
+    gap: 12px;
+    padding: 0 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes statusShimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes statusFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reportCardFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   PERFORMANCE
+========================================================= */
+
+.status-bar,
+.report-header,
+.report-metadata > *,
+.action-buttons button,
+.action-buttons .btn,
+.clinic-logo {
+  will-change: transform;
 }
